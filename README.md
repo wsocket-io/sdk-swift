@@ -21,7 +21,7 @@ Or in Xcode: **File → Add Package Dependencies** → paste the repository URL.
 ```swift
 import WSocketIO
 
-let client = WSocket(url: "wss://your-server.com", apiKey: "your-api-key")
+let client = WSocket(url: "wss://node00.wsocket.online", apiKey: "your-api-key")
 
 client.onConnect {
     print("Connected!")
@@ -73,7 +73,7 @@ channel.onHistory { result in
 ## Push Notifications
 
 ```swift
-let push = PushClient(baseUrl: "https://your-server.com", token: "secret", appId: "app1")
+let push = PushClient(baseUrl: "https://node00.wsocket.online", token: "secret", appId: "app1")
 
 // Register device
 push.registerAPNs(deviceToken: apnsToken, memberId: "user-123")
