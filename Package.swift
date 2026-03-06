@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "WSocketIO", targets: ["WSocketIO"])
     ],
     targets: [
-        .target(name: "WSocketIO", path: "Sources/WSocketIO")
+        .target(name: "WSocketIO", path: "Sources/WSocketIO"),
+        .testTarget(name: "WSocketIOTests", dependencies: ["WSocketIO"], path: "Tests/WSocketIOTests")
     ]
 )
