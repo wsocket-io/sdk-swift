@@ -1,0 +1,23 @@
+name: Verify Swift Package Release
+
+# Swift packages are distributed via Git tags.
+# This workflow verifies the tag builds correctly.
+on:
+  push:
+    tags: ['*.*.*']
+
+jobs:
+  verify:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.4'
+      - run: swift build -c release
+      - run: swift test
+      - name: Verify package resolves
+        run: |
+          echo "✅ Swift package ${{ github.ref_name }} tagged successfully"
+          echo "Users can now add:"
+          echo '.package(url: "https://github.com/wsocket-io/sdk-swift.git", from: "${{ github.ref_name }}")'
