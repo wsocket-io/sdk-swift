@@ -1,6 +1,10 @@
 # wSocket SDK for Swift
 
-Official Swift SDK for wSocket — realtime pub/sub, presence, history, and push notifications for iOS, macOS, tvOS, and watchOS.
+Official Swift SDK for [wSocket](https://wsocket.io) — realtime pub/sub, presence, history, and push notifications for iOS, macOS, tvOS, and watchOS.
+
+[![Swift](https://img.shields.io/badge/Swift-5.7+-orange.svg)](https://swift.org)
+[![Platforms](https://img.shields.io/badge/Platforms-iOS%2015%20|%20macOS%2012%20|%20tvOS%2015%20|%20watchOS%208-blue.svg)](https://github.com/wsocket-io/sdk-swift)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## Installation
 
