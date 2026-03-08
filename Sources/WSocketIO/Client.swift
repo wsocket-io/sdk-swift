@@ -273,6 +273,16 @@ public class PushClient {
         post("broadcast", body: ["payload": payload], completion: completion)
     }
 
+    public func unregister(memberId: String, platform: String? = nil, completion: ((Error?) -> Void)? = nil) {
+        var body: [String: Any] = ["memberId": memberId]
+        if let p = platform { body["platform"] = p }
+        post("unregister", body: body, completion: completion)
+    }
+
+    public func deleteSubscription(subscriptionId: String, completion: ((Error?) -> Void)? = nil) {
+        post("unregister", body: ["subscriptionId": subscriptionId], completion: completion)
+    }
+
     private func post(_ path: String, body: [String: Any], completion: ((Error?) -> Void)? = nil) {
         guard let url = URL(string: "\(baseUrl)/api/push/\(path)") else { return }
         var req = URLRequest(url: url)
