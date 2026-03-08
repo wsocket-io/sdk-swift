@@ -280,18 +280,62 @@ public class PushClient {
     }
 
     public func deleteSubscription(subscriptionId: String, completion: ((Error?) -> Void)? = nil) {
-        post("unregister", body: ["subscriptionId": subscriptionId], completion: completion)
+        request("DELETE", path: "subscriptions/\(subscriptionId)", body: nil, completion: completion)
     }
 
-    private func post(_ path: String, body: [String: Any], completion: ((Error?) -> Void)? = nil) {
+    public func addChannel(memberId: String, channel: String, completion: ((Error?) -> Void)? = nil) {
+        post("channels/add", body: ["memberId": memberId, "channel": channel], completion: completion)
+    }
+
+    public func removeChannel(memberId: String, channel: String, completion: ((Error?) -> Void)? = nil) {
+        post("channels/remove", body: ["memberId": memberId, "channel": channel], completion: completion)
+    }
+
+    public func getVapidKey(completion: @escaping (String?) -> Void) {
+        guard let url = URL(string: "\(baseUrl)/api/push/vapid-key") else { completion(nil); return }
+        var req = URLRequest(url: url)
+        req.httpMethod = "GET"
+        req.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        req.addValue(appId, forHTTPHeaderField: "X-App-Id")
+        session.dataTask(with: req) { data, _, _ in
+            guard let data = data,
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let key = json["vapidPublicKey"] as? String else { completion(nil); return }
+            completion(key)
+        }.resume()
+    }
+
+    public func listSubscriptions(memberId: String? = nil, platform: String? = nil, limit: Int? = nil, completion: @escaping ([[String: Any]]) -> Void) {
+        var params = [String]()
+        if let m = memberId { params.append("memberId=\(m)") }
+        if let p = platform { params.append("platform=\(p)") }
+        if let l = limit { params.append("limit=\(l)") }
+        let qs = params.isEmpty ? "" : "?\(params.joined(separator: "&"))"
+        guard let url = URL(string: "\(baseUrl)/api/push/subscriptions\(qs)") else { completion([]); return }
+        var req = URLRequest(url: url)
+        req.httpMethod = "GET"
+        req.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        req.addValue(appId, forHTTPHeaderField: "X-App-Id")
+        session.dataTask(with: req) { data, _, _ in
+            guard let data = data,
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] else { completion([]); return }
+            completion(json)
+        }.resume()
+    }
+
+    private func request(_ method: String, path: String, body: [String: Any]?, completion: ((Error?) -> Void)? = nil) {
         guard let url = URL(string: "\(baseUrl)/api/push/\(path)") else { return }
         var req = URLRequest(url: url)
-        req.httpMethod = "POST"
+        req.httpMethod = method
         req.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         req.addValue(appId, forHTTPHeaderField: "X-App-Id")
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        if let body = body { req.httpBody = try? JSONSerialization.data(withJSONObject: body) }
         session.dataTask(with: req) { _, _, err in completion?(err) }.resume()
+    }
+
+    private func post(_ path: String, body: [String: Any], completion: ((Error?) -> Void)? = nil) {
+        request("POST", path: path, body: body, completion: completion)
     }
 }
 
